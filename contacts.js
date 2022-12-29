@@ -1,7 +1,6 @@
 const { v4: uuidv4 } = require("uuid");
 const fs = require("fs").promises;
 const path = require("path");
-// const { stringify } = require("querystring");
 
 const contactsPath = path.resolve("db/contacts.json");
 
@@ -11,7 +10,7 @@ async function listContacts() {
     .then((data) => {
       return console.log(data);
     })
-    .catch((err) => console.log("Smth went wrong"));
+    .catch((err) => console.log(`Smth went wrong: ${err}`));
 }
 
 function getContactById(contactId) {
@@ -41,7 +40,7 @@ function removeContact(contactId) {
         if (contact.id === contactId) {
           deletedContact = data.splice(data.indexOf(contact), 1);
           fs.writeFile(contactsPath, JSON.stringify(data));
-          console.log("Contact DELETED");
+          console.log(`Contact ${contactId} DELETED`);
         }
       });
     })
