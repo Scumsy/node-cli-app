@@ -5,73 +5,52 @@ const path = require("path");
 const contactsPath = path.resolve("db/contacts.json");
 
 async function listContacts() {
-  await fs
-    .readFile(contactsPath, "utf8")
-    .then((data) => {
-      return console.log(data);
-    })
-    .catch((err) => console.log(`Smth went wrong: ${err}`));
+  try {
+    const parsedData = JSON.parse(await fs.readFile(contactsPath, "utf8"));
+    return console.log(parsedData);
+  } catch (error) {
+    console.log(`Smth went wrong: ${error}`);
+  }
 }
 
-function getContactById(contactId) {
-  fs.readFile(contactsPath)
-    .then((data) => {
-      return JSON.parse(data);
-    })
-
-    .then((data) =>
-      data.filter((contact) => {
-        if (contact.id === contactId) {
-          return console.log(contact);
-        }
-      })
-    )
-    .catch((err) => console.log(`Smth went wrong: ${err}`));
+async function getContactById(contactId) {
+  try {
+    const parsedData = JSON.parse(await fs.readFile(contactsPath));
+    const searchedContact = parsedData.filter((contact) => {
+      if (contact.id === contactId) {
+        return contact;
+      }
+    });
+    return console.log(searchedContact);
+  } catch (error) {
+    console.log(`Smth went wrong: ${error}`);
+  }
 }
 
-function removeContact(contactId) {
-  fs.readFile(contactsPath)
-    .then((data) => {
-      return JSON.parse(data);
-    })
-
-    .then(async (data) => {
-      data.filter((contact) => {
-        if (contact.id === contactId) {
-          deletedContact = data.splice(data.indexOf(contact), 1);
-          fs.writeFile(contactsPath, JSON.stringify(data));
-          console.log(`Contact ${contactId} DELETED`);
-        }
-      });
-    })
-
-    .catch((err) => console.log(`Smth went wrong: ${err}`));
+async function removeContact(contactId) {
+  try {
+    const parsedData = JSON.parse(await fs.readFile(contactsPath));
+    parsedData.filter((contact) => {
+      if (contact.id === contactId) {
+        parsedData.splice(parsedData.indexOf(contact), 1);
+      }
+    });
+    await fs.writeFile(contactsPath, JSON.stringify(parsedData));
+    console.log(`Contact ${contactId} DELETED`);
+  } catch (error) {
+    console.log(`Smth went wrong: ${error}`);
+  }
 }
 
-function addContact(name, email, phone) {
-  let newContact;
-  fs.readFile(contactsPath)
-    .then((data) => {
-      return JSON.parse(data);
-    })
-    .then((data) => {
-      data.map((contact) => {
-        if (contact.name === name) {
-          return console.log("Name already exist");
-        } else {
-          return (newContact = { id: uuidv4(), name, email, phone });
-        }
-      });
-      data.push(newContact);
-      return data;
-    })
-
-    .then(async (data) => {
-      console.log(data);
-      await fs.writeFile(contactsPath, JSON.stringify(data), "utf8");
-    })
-
-    .catch((err) => console.log(`Smth went wrong: ${err}`));
+async function addContact(name, email, phone) {
+  try {
+    const parsedData = JSON.parse(await fs.readFile(contactsPath));
+    parsedData.push({ id: uuidv4(), name, email, phone });
+    console.log(parsedData);
+    await fs.writeFile(contactsPath, JSON.stringify(parsedData), "utf8");
+  } catch (error) {
+    console.log(`Smth went wrong: ${error}`);
+  }
 }
 
 module.exports = {
